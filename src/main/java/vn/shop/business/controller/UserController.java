@@ -1,15 +1,22 @@
 package vn.shop.business.controller;
 
-import vn.shop.business.entity.User;
-import vn.shop.business.service.UserService;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import vn.shop.business.entity.User;
+import vn.shop.business.service.UserService;
 
 @RestController
 @RequestMapping("/api")
@@ -21,6 +28,11 @@ public class UserController {
 	private ResponseEntity<List<User>> requestUsers() {
 		List<User> user = userService.getAllUsers();
 		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/register", produces = { "application/json" }, method = RequestMethod.POST)
+	private void registerUser(@RequestBody User user) {
+		userService.saveUser(user);
 	}
 
 	@GetMapping

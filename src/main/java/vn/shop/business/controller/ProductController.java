@@ -1,17 +1,33 @@
 package vn.shop.business.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import vn.shop.business.entity.Product;
 import vn.shop.business.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/products")
+@RestController
+@RequestMapping("/api/products")
 public class ProductController {
     @Autowired
     private ProductService productService;
+    
+    @RequestMapping(value = "/request", produces = { "application/json" }, method = RequestMethod.GET)
+	private ResponseEntity<List<Product>> requestUsers() {
+		List<Product> product = productService.getAllProducts();
+		return new ResponseEntity<>(product, HttpStatus.OK);
+	}
 
     @GetMapping
     public String listProducts(Model model) {
