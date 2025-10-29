@@ -5,11 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,40 +25,21 @@ public class ProductController {
 		List<Product> product = productService.getAllProducts();
 		return new ResponseEntity<>(product, HttpStatus.OK);
 	}
-
-    @GetMapping
-    public String listProducts(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
-        return "product/list";
-    }
-
-    @GetMapping("/add")
-    public String addProductForm(Model model) {
-        model.addAttribute("product", new Product());
-        return "product/add";
-    }
-
-    @PostMapping("/add")
-    public String addProduct(@ModelAttribute Product product) {
+    
+    @RequestMapping(value = "/add", produces = { "application/json" }, method = RequestMethod.POST)
+    public void registerProduct(@RequestBody Product product) {
         productService.saveProduct(product);
-        return "redirect:/products";
     }
-
-    @GetMapping("/edit/{id}")
-    public String editProductForm(@PathVariable Long id, Model model) {
-        model.addAttribute("product", productService.getProduct(id));
-        return "product/edit";
+    
+    @RequestMapping(value = "/update/{id}", produces = { "application/json" }, method = RequestMethod.PUT)
+    public void updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Product pro = productService.getProduct(id);
+        pro = pro.toBuilder().name(product.getName()).description(product.getDescription()).stock(product.getStock()).price(product.getPrice()).imageUrl(product.getImageUrl()).build();
+        productService.saveProduct(pro);
     }
-
-    @PostMapping("/edit")
-    public String editProduct(@ModelAttribute Product product) {
-        productService.saveProduct(product);
-        return "redirect:/products";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Long id) {
+    
+    @RequestMapping(value = "/delete/{id}", produces = { "application/json" }, method = RequestMethod.DELETE)
+    public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
-        return "redirect:/products";
     }
 }
